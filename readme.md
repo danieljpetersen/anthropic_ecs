@@ -12,10 +12,12 @@ For example, you might have a system which is responsible for updating movement.
 
 
 ```cpp
-registry.forEachComponent<Position, Velocity>([](EntityId id, Position &pos, Velocity &vel) {
-	pos.x += vel.x;
-	pos.y += vel.y;
-});
+registry.forEachComponent<Position, Velocity>(
+    [](EntityId id, Position &pos, Velocity &vel) {
+        pos.x += vel.x;
+        pos.y += vel.y;
+    }
+);
 ```
 
 It's cool because it operates against every entity which has both Position and Velocity, so you can have an entity which has like <Position, Velocity, Hp, etc> and an entity which has like <Position, Velocity, Text> and they'll now both get hit and update according to the logic there. 
