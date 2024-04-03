@@ -155,7 +155,7 @@ int main() {
 
     ComponentPool<Component1, Component2, Component3> *pool = registry.getPool<Component1, Component2, Component3>();
     if (pool) {
-        std::cout << "This pool size: " << pool->size() << ". Note that it is size 0. It returns the entity count inside this pool, not within the registry" << std::endl;
+        std::cout << "This pool size: " << pool->size() << ". Note that it is size 1. It returns the entity count inside this pool, not within the registry" << std::endl;
 
         if (pool->hasComponent<Component1>()) {
             std::cout << "Just showing the hasComponent function" << std::endl;
