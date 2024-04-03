@@ -203,18 +203,17 @@ int main() {
 ## Future
 
 Things I may still do:
-    - Add a ctx() similar to entt. In other words, singleton components (they would still be able to be assigned to entities, but the one in the ctx() would be unique)
-    - Add an overload to createEntity which takes Components&& and forwards to the relevant constructor
-    - Add a batch removeEntity
-    - Add a batch createEntity
-    - Add a batch removeComponents<Components>(e)
-    - Add a batch addComponents<Components>(e) and addComponents<Components>(e, Components&&...)
-	- Add tests
+* Add a ctx() similar to entt. In other words, singleton components (they would still be able to be assigned to entities, but the one in the ctx() would be unique)   
+* Add an overload to createEntity which takes Components&& and forwards to the relevant constructor
+* Add a batch removeEntity
+* Add a batch createEntity
+* Add a batch removeComponents<Components>(e)
+* Add a batch addComponents<Components>(e) and addComponents<Components>(e, Components&&...)
+* Add tests
 
 Things which would be nice but I am not going to do:
-    - Allow for entity and component addition/removal during iteration. This would complicate things too much
-    - Remove the template<SetOfAllComponents> from the ComponentPool class. This simplified the implementation, and I don't see much gain from removing it
-
+* Allow for entity and component addition/removal during iteration. This would complicate things too much
+* Remove the template<SetOfAllComponents> from the ComponentPool class. This simplified the implementation, and I don't see much gain from removing it
 
 ## License
 
