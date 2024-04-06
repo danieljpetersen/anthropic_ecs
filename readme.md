@@ -126,86 +126,67 @@ Every public function:
 #include "anthropic_ecs.h"
 #include <iostream>
 
-struct Component1 {
-    float example = 2.0f;
+struct ComponentPosition {
+    float x = 0.0f;
+    float y = 0.0f;
 };
 
-struct Component2 {
-    int whatever = 9;
+struct ComponentVelocity {
+    float vx = 0.0f;
+    float vy = 0.0f;
 };
 
-struct Component3 {
-    bool youGetTheIdea = true;
+struct ComponentExtra {
+    bool flag = true;
 };
 
-#define ALL_COMPONENTS Component1, Component2, Component3
+#define ALL_COMPONENTS ComponentPosition, ComponentVelocity, ComponentExtra
 
 int main() {
     Registry<ALL_COMPONENTS> registry;
 
-    EntityId entity1 = registry.createEntity<Component1, Component2>();
-    EntityId entity2 = registry.createEntity<Component1, Component3>();
-    EntityId entity3 = registry.createEntity<Component1>();
+    EntityId entity1 = registry.createEntity<ComponentPosition, ComponentVelocity>();
+    EntityId entity2 = registry.createEntity<ComponentPosition>();
+    EntityId entity3 = registry.createEntity<ComponentPosition, ComponentExtra>();
 
-    registry.addComponent<Component3>(entity1, Component3{});
+    registry.addComponent<ComponentVelocity>(entity2, {1.0f, 1.0f});
+    registry.addComponent<ComponentExtra>(entity1, {});
 
-    int i = 0;
-    registry.forEachComponents<Component1, Component2>(
-        [&](EntityId entityId, Component1 &component1, Component2 &component2) {
-            component1.example += 2;
-
-            std::cout << i++ << " (forEachComponents<Component1, Component2>): "
-                      << "entity ID: " << entityId.unstableIndex 
-                      << ", Version: " << entityId.version 
-                      << ", poolKey: " << entityId.poolKey
-                      << " (component1.example): " << component1.example << std::endl;
+    registry.forEachComponents<ComponentPosition, ComponentVelocity>(
+        [&](EntityId id, ComponentPosition &pos, ComponentVelocity &vel) {
+            pos.x += vel.vx;
+            pos.y += vel.vy;
         }
     );
 
-    ComponentPool<Component1, Component2, Component3> *pool = 
-        registry.getPool<Component1, Component2, Component3>();
-    if (pool) {
-        std::cout << "This pool size: " << pool->size() 
-                  << ". Note that it is size 1. It returns the entity count "
-                  << "inside this pool, not within the registry" << std::endl;
-
-        if (pool->hasComponent<Component1>()) {
-            std::cout << "Just showing the hasComponent function" << std::endl;
-        }
-
-        if (pool->hasComponents<Component1, Component2>()) {
-            std::cout << "Just showing the hasComponents function" << std::endl;
-        }
-    }
-
-    i = 0;
-    registry.forEachEntity([&](EntityId entityId) {
-        std::cout << i++ << " (registry.forEachEntity): entity ID: " 
-                  << entityId.unstableIndex << ", Version: " << entityId.version 
-                  << ", poolKey: " << entityId.poolKey << std::endl;
+    registry.forEachEntity([&](EntityId id) {
+        std::cout << "Entity: " << id.version << " processed\n";
     });
 
-    i = 0;
-    registry.forEachPool([&](ComponentPool<ALL_COMPONENTS> &pool) {
-        std::cout << i++ << " (registry.forEachPool)" << std::endl;
+    registry.forEachPool([&](auto &pool) {
+        std::cout << "A component pool processed\n";
     });
 
-    i = 0;
-    registry.forEachComponentsEarlyReturn<Component1>(
-        [&](EntityId id, Component1 &component1) {
-            std::cout << i++ << " (forEachComponentsEarlyReturn)" << std::endl;
-            return true; // true for early return. this does one iteration
+    registry.forEachComponentsEarlyReturn<ComponentPosition>(
+        [&](EntityId id, ComponentPosition &pos) {
+            return true; // Stops after one iteration
         }
     );
 
-    registry.removeComponent<Component3>(entity1);
-    registry.removeEntity(entity3);
+    registry.removeComponent<ComponentExtra>(entity3);
+    registry.removeEntity(entity1);
 
-    registry.addComponent<Component2>(entity2, {.whatever = 97});
-    std::cout << "(Entity1->example) " << registry.get<Component1>(entity1)->example << std::endl;
+    registry.set<ComponentVelocity>(entity2, {0.0f, -1.0f});
 
-    registry.set<Component2>(entity2, {.whatever = 37});
-    std::cout << "(entity2->whatever): " << registry.get<Component2>(entity2)->whatever << std::endl;
+    auto entity2Position = registry.get<ComponentPosition>(entity2);
+    auto entity2Velocity = registry.get<ComponentVelocity>(entity2);
+    std::cout << "Position.x: " << entity2Position->x
+              << ", Position.y: " << entity2Position->y << std::endl
+              << "Velocity.vx: " << entity2Velocity->vx
+              << ", Velocity.vy: " << entity2Velocity->vy
+              << std::endl;
+
+    return 0;
 }
 ```
 
