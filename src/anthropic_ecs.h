@@ -113,7 +113,7 @@ inline void hashCombine(std::size_t& seed, const std::size_t& hash) {
 
 // ----
 // Function to combine all hashes in a vector, needed for generating a unique key for each pool + deriving pool key when template types not available
-std::size_t combineHashes(std::vector<std::size_t> hashes) {
+inline std::size_t combineHashes(std::vector<std::size_t> hashes) {
     std::size_t seed = 0;
     // sort required for consistent hash order, <CmpVelocity, CmpPosition> should hash the same as <CmpPosition, CmpVelocity>
     std::sort(hashes.begin(), hashes.end());
