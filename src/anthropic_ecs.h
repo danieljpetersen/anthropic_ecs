@@ -165,7 +165,7 @@ public:
     ComponentPool() : poolSize(0) {}
 
     template<typename... Components>
-    void initFromTemplate(int entityPoolKey, const std::vector<size_t>& _componentHashes) {
+    void initFromTemplate(size_t entityPoolKey, const std::vector<size_t>& _componentHashes) {
         this->poolKey = entityPoolKey;
         this->componentHashes = _componentHashes;
         componentsInUseIndices = getComponentIndices<Components...>(std::make_index_sequence<sizeof...(Components)>{});
@@ -174,7 +174,7 @@ public:
     }
 
     // todo change this function to initFromIndices, all usages should be easily convertible
-    void initFromBitmask(int entityPoolKey, const std::vector<size_t>& _componentHashes, const std::bitset<sizeof...(SetOfAllComponents)>& bitmask) {
+    void initFromBitmask(size_t entityPoolKey, const std::vector<size_t>& _componentHashes, const std::bitset<sizeof...(SetOfAllComponents)>& bitmask) {
         this->poolKey = entityPoolKey;
         this->componentHashes = _componentHashes;
         this->componentsInUseBitmask = bitmask;
@@ -362,14 +362,7 @@ private:
 template<typename... SetOfAllComponents>
 class Registry {
 private:
-
-#ifdef ANTHROPIC_USE_ANKERL
-    // ankerl has the same API as unordered_map, but it's a vector under the hood for faster iteration of pools (which we do in our forEach loops)
-    ankerl::unordered_dense::map<size_t, ComponentPool<SetOfAllComponents...>> pools;
-#else
     std::unordered_map<size_t, ComponentPool<SetOfAllComponents...>> pools;
-#endif
-
     std::unordered_map<std::size_t, EntityId> entityRemappings;
     int nextVersionIndex = 0;
 
@@ -526,7 +519,6 @@ public:
                 auto [it, inserted] = pools.emplace(newPoolKey, ComponentPool<SetOfAllComponents...>());
                 newPoolIt = it;
 
-                // todo: not sure why but I get assert failures in my test cases when this line is not here. It does not make sense to me because unordered_map provides pointer stability...  same story for the addComponent function
                 oldPool = &pools.find(entityId.poolKey)->second;
 
                 auto nextBitmask = oldPool->componentsInUseBitmask;
@@ -578,7 +570,6 @@ public:
             auto [it, inserted] = pools.emplace(newPoolKey, ComponentPool<SetOfAllComponents...>());
             newPoolIt = it;
 
-            // todo: not sure why but I get assert failures in my test cases when this line is not here. It does not make sense to me because unordered_map provides pointer stability... same story for the addComponent function
             oldPool = &pools.find(entityId.poolKey)->second;
 
             auto nextBitmask = oldPool->componentsInUseBitmask;
@@ -631,6 +622,9 @@ public:
     void forEachPool(std::function<void(ComponentPool<SetOfAllComponents...>&)> callback) {
         isIterating = true;
         for (auto& poolPair : pools) {
+			if (poolPair.second.size() == 0) {
+				continue;
+			}
             ComponentPool<SetOfAllComponents...>& pool = poolPair.second;
             callback(pool);
         }
