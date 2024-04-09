@@ -18,23 +18,23 @@ struct ComponentExtra {
 #define ALL_COMPONENTS ComponentPosition, ComponentVelocity, ComponentExtra
 
 int main() {
-    Registry<ALL_COMPONENTS> registry;
+    fi::Registry<ALL_COMPONENTS> registry;
 
-    EntityId entity1 = registry.createEntity<ComponentPosition, ComponentVelocity>();
-    EntityId entity2 = registry.createEntity<ComponentPosition>();
-    EntityId entity3 = registry.createEntity<ComponentPosition, ComponentExtra>();
+    fi::EntityId entity1 = registry.createEntity<ComponentPosition, ComponentVelocity>();
+    fi::EntityId entity2 = registry.createEntity<ComponentPosition>();
+    fi::EntityId entity3 = registry.createEntity<ComponentPosition, ComponentExtra>();
 
     registry.addComponent<ComponentVelocity>(entity2, {1.0f, 1.0f});
     registry.addComponent<ComponentExtra>(entity1, {});
 
     registry.forEachComponents<ComponentPosition, ComponentVelocity>(
-        [&](EntityId id, ComponentPosition &pos, ComponentVelocity &vel) {
+        [&](fi::EntityId id, ComponentPosition &pos, ComponentVelocity &vel) {
             pos.x += vel.vx;
             pos.y += vel.vy;
         }
     );
 
-    registry.forEachEntity([&](EntityId id) {
+    registry.forEachEntity([&](fi::EntityId id) {
         std::cout << "Entity: " << id.version << " processed\n";
     });
 
@@ -43,7 +43,7 @@ int main() {
     });
 
     registry.forEachComponentsEarlyReturn<ComponentPosition>(
-        [&](EntityId id, ComponentPosition &pos) {
+        [&](fi::EntityId id, ComponentPosition &pos) {
             return true; // Stops after one iteration
         }
     );
