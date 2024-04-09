@@ -176,11 +176,11 @@ int main() {
     registry.removeComponent<ComponentExtra>(entity3);
     registry.removeEntity(entity1);
 
-    registry.set<ComponentVelocity>(entity2, {0.0f, -1.0f});
+	registry.set<ComponentVelocity>(entity2, {0.0f, -1.0f});
 
 	auto entity2Position = registry.get<ComponentPosition>(entity2);
 	auto entity2Velocity = registry.get<ComponentVelocity>(entity2);
-    std::cout << "Position.x: " << entity2Position->x
+	std::cout << "Position.x: " << entity2Position->x
 			  << ", Position.y: " << entity2Position->y << std::endl
 			  << "Velocity.vx: " << entity2Velocity->vx
 			  << ", Velocity.vy: " << entity2Velocity->vy
