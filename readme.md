@@ -145,12 +145,12 @@ struct ComponentExtra {
 int main() {
     fi::Registry<ALL_COMPONENTS> registry;
 
-    fi::EntityId entity1 = registry.createEntity<ComponentPosition, ComponentVelocity>();
-    fi::EntityId entity2 = registry.createEntity<ComponentPosition>();
-    fi::EntityId entity3 = registry.createEntity<ComponentPosition, ComponentExtra>();
+    fi::EntityId entity0 = registry.createEntity<ComponentPosition, ComponentVelocity>();
+    fi::EntityId entity1 = registry.createEntity<ComponentPosition>();
+    fi::EntityId entity2 = registry.createEntity<ComponentPosition, ComponentExtra>();
 
-    registry.addComponent<ComponentVelocity>(entity2, {1.0f, 1.0f});
-    registry.addComponent<ComponentExtra>(entity1, {});
+    registry.addComponent<ComponentVelocity>(entity1, {1.0f, 1.0f});
+    registry.addComponent<ComponentExtra>(entity0, {});
 
     registry.forEachComponents<ComponentPosition, ComponentVelocity>(
         [&](fi::EntityId id, ComponentPosition &pos, ComponentVelocity &vel) {
@@ -173,18 +173,17 @@ int main() {
         }
     );
 
-    registry.removeComponent<ComponentExtra>(entity3);
-    registry.removeEntity(entity1);
+    registry.removeComponent<ComponentExtra>(entity2);
+    registry.removeEntity(entity0);
 
-	registry.set<ComponentVelocity>(entity2, {0.0f, -1.0f});
+    registry.set<ComponentVelocity>(entity1, {0.0f, -1.0f});
 
-	auto entity2Position = registry.get<ComponentPosition>(entity2);
-	auto entity2Velocity = registry.get<ComponentVelocity>(entity2);
-	std::cout << "Position.x: " << entity2Position->x
-			  << ", Position.y: " << entity2Position->y << std::endl
-			  << "Velocity.vx: " << entity2Velocity->vx
-			  << ", Velocity.vy: " << entity2Velocity->vy
-			  << std::endl;
+    auto entity1Position = registry.get<ComponentPosition>(entity1);
+    auto entity1Velocity = registry.get<ComponentVelocity>(entity1);
+    std::cout << "Position.x: " << entity1Position->x << "\n"
+              << "Position.y: " << entity1Position->y << "\n"
+              << "Velocity.vx: " << entity1Velocity->vx << "\n"
+              << "Velocity.vy: " << entity1Velocity->vy << std::endl;
 
     return 0;
 }
